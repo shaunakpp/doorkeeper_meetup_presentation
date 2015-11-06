@@ -1,0 +1,291 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Doorkeeper</title>
+
+	<meta name="description" content="Doorkeeper is a gem that is used for turning your app into an OAuth provider">
+	<meta name="author" content="Shaunak Pagnis" />
+	<meta name="viewport" content="width=device-width, maximum-scale=1.0, initial-scale=1.0, user-scalable=yes" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jmpress/0.4.5/jmpress.all.min.js"></script>
+</head>
+<body>
+<div id="simple">
+	<div id="home" class="step">
+		<h1>Connecting Apps Using Doorkeeper</h1>
+		<p>By Shaunak Pagnis</p>
+	</div>
+	<div class="step" data-x="1000">
+	<h2>What we will discuss today</h2>
+		<ul>
+			<li>Some Problems with large Rails Applications</li>
+			<li>Advantages of dividing a large Application into smaller inter-dependant applications</li>
+			<li>How to Communicate between these smaller applications</li>
+			<li>What is OAuth</li>
+			<li>How does OAuth work</li>
+			<li>What is an OAuth provider</li>
+			<li>What is Doorkeeper</li>
+			<li>Some tips on using Doorkeeper</li>
+			<li>Using OmniAuth for client applications</li>
+			<li>Writing OAuth strategies for OAuth providers</li>
+		</ul>
+	</div>
+	<div class="step" data-x="2000">
+		<h2>Problems with large Rails applications</h2>
+		<ul>
+			<li>Code Maintenance</li>
+			<li>Slow feature deployments</li>
+			<li>Things get slower</li>
+			<li>More resources</li>
+			<li>And so on...</li>
+		</ul>
+	</div>
+	<div class="step" data-x="3000">
+		<h2> Small is good.</h2>
+		<ul>
+			<li>Separation of concerns</li>
+			<li>Faster Deployments</li>
+			<li>Can be shipped independant of Parent app</li>
+			<li>Smaller CodeBase easier to manage</li>
+		</ul>
+	</div>
+	<div class="step" data-x="4000">
+		<h2>How to make them Talk?</h2>
+		<ul>
+			<li>Use a Centralized API application and use smaller Applications as API consumers</li>
+			<li>Let all apps behave like APIs for communication</li>
+			<li>Can Use OAuth for both Applications</li>
+		</ul>
+	</div>
+	<div class="step" data-x="5000">
+		<h2>What is OAuth</h2>
+		<h3>What RFC 6749 says</h3>
+		<p>   The OAuth 2.0 authorization framework enables a third-party
+   application to obtain limited access to an HTTP service, either on
+   behalf of a resource owner by orchestrating an approval interaction
+   between the resource owner and the HTTP service, or by allowing the
+   third-party application to obtain access on its own behalf.  This
+   specification replaces and obsoletes the OAuth 1.0 protocol described
+   in RFC 5849.</p>
+   <br/>
+	</div>
+	<div class="step" data-x="6000">
+		<h2>How does OAuth Work?</h2>
+		<pre>
+     +--------+                               +---------------+
+     |        |--(A)- Authorization Request ->|   Resource    |
+     |        |                               |     Owner     |
+     |        |<-(B)-- Authorization Grant ---|               |
+     |        |                               +---------------+
+     |        |
+     |        |                               +---------------+
+     |        |--(C)-- Authorization Grant -->| Authorization |
+     | Client |                               |     Server    |
+     |        |<-(D)----- Access Token -------|               |
+     |        |                               +---------------+
+     |        |
+     |        |                               +---------------+
+     |        |--(E)----- Access Token ------>|    Resource   |
+     |        |                               |     Server    |
+     |        |<-(F)--- Protected Resource ---|               |
+     +--------+                               +---------------+
+		</pre>
+		<ul>
+			<li><a href="http://blog.joshsoftware.com/2010/12/16/multiple-applications-with-devise-omniauth-and-single-sign-on/">Awesome Blog by Gautam Rege</a></li>
+		</ul>
+	</div>
+	<div class="step" data-x="7000">
+		<h2>What is Doorkeeper and How does it work</h2>
+		<li><a href="https://github.com/doorkeeper-gem/doorkeeper">https://github.com/doorkeeper-gem/doorkeeper</a></li>
+	</div>
+	<div class="step" data-x="8000">
+		<h2>Using OmniAuth in client Applications</h2>
+		<ul>
+			<li>gems required: OAuth2,Omniauth,Omniauth-OAuth2</li>
+			<li>Works with or without devise.</li>
+		</ul>
+		<h3>With Devise</h3>
+		<p>Add this to your devise  config</p>
+		<code>  config.omniauth :my_provider_name,  APP_ID, APP_SECRET,:provider_ignores_state => true
+		</code>
+		<p>Write your OmniAuth Callbacks Controller to handle authorization</p>
+		<h3>Without Devise</h3>
+		<p>Add this to your Rails middleware</p>
+		<code>
+			Rails.application.config.middleware.use OmniAuth::Builder do
+			 provider :my_provider_name, APP_ID, APP_SECRET
+			end
+		</code>
+		<h3>Writing Strategy for your provider.</h3>
+
+	</div>
+	<div class="step" data-x="9000">
+		<h2>Single Sign Out Problem</h2>
+			<p>Problem with managing different sessions </p>
+			<p>Add this to your session_store.rb</p>
+			<code>MyApp::Application.config.session_store :cookie_store, :key => "_my_app_key", :domain => :all</code>
+			<p>And Override You Sessions Controller</p>
+			<pre>
+				class Users::SessionsController < Devise::SessionsController
+					def destroy
+				 		super
+				 		cookies.clear(:domain => :all)
+				 	end
+				end
+			</pre>
+		<h3></h3>
+	</div>
+	<div class="step" data-x="10000">
+		<h2>Thats All Folks!</h2>
+		<h3>Any Questions?</h3>
+		<span style="font-size:10px">P.S: This awesome presentation library is jimpress.js</span>
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+	$('#simple').jmpress();
+});
+</script>
+
+<style>
+/** GENERAL **/
+body {
+	font-family: Verdana, sans-serif;
+	min-height: 740px;
+	background-color: #ddd;
+	-webkit-font-smoothing: antialiased;
+}
+
+/** STEP STYLES **/
+.step {
+	width: 900px;
+    height: 400px;
+	font-size: 1em;
+	min-height: 500px;
+	background-color: white;
+
+	display: block;
+    padding: 40px 60px;
+    border-radius: 10px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+    border: 1px solid rgba(0, 0, 0, .3);
+
+    color: rgb(102, 102, 102);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+
+    letter-spacing: -1px;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing:    border-box;
+	-ms-box-sizing:     border-box;
+	-o-box-sizing:      border-box;
+	box-sizing:         border-box;
+
+	-webkit-transition: opacity 1s;
+	-moz-transition:    opacity 1s;
+	-ms-transition:     opacity 1s;
+	-o-transition:      opacity 1s;
+	transition:         opacity 1s;
+}
+
+/* fade out inactive slides */
+.step:not(.active) {
+	opacity: 0.3;
+}
+
+/* hint on the first slide */
+.hint {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+
+	background: #333;
+	color: #fff;
+	text-align: right;
+
+	padding: 10px;
+	z-index: 100;
+
+	opacity: 0;
+
+	-webkit-transform: translateY(400px);
+	-moz-transform:    translateY(400px);
+	-ms-transform:     translateY(400px);
+	-o-transform:      translateY(400px);
+	transform:         translateY(400px);
+
+	-webkit-transition: opacity 1s, -webkit-transform 0.5s 1s;
+	-moz-transition:    opacity 1s,    -moz-transform 0.5s 1s;
+	-ms-transition:     opacity 1s,     -ms-transform 0.5s 1s;
+	-o-transition:      opacity 1s,      -o-transform 0.5s 1s;
+	transition:         opacity 1s,         transform 0.5s 1s;
+}
+.step-home + .hint {
+	opacity: 1;
+
+	-webkit-transition: opacity 1s 5s, -webkit-transform 0.5s;
+	-moz-transition:    opacity 1s 5s,    -moz-transform 0.5s;
+	-ms-transition:     opacity 1s 5s,     -ms-transform 0.5s;
+	-o-transition:      opacity 1s 5s,      -o-transform 0.5s;
+	transition:         opacity 1s 5s,         transform 0.5s;
+
+	-webkit-transform: translateY(0px);
+	-moz-transform:    translateY(0px);
+	-ms-transform:     translateY(0px);
+	-o-transform:      translateY(0px);
+	transform:         translateY(0px);
+}
+
+/** NOT SUPPORTED STYLES **/
+.not-supported .step {
+	position: relative;
+	opacity: 1;
+	margin: 20px auto;
+}
+
+/** PRINT STYLE **/
+@media print {
+	body {
+		background: white;
+	}
+	.hint {
+		display: none;
+	}
+	#simple {
+		width: auto;
+		margin: 0 5%;
+		padding: 0;
+		border: 0;
+		float: none !important;
+		color: black;
+		background: transparent;
+	}
+	.step {
+		page-break-after: always;
+		opacity: 1;
+		clear: both;
+		display: block;
+		float: none !important;
+		position: relative;
+		margin: 20px auto;
+
+		-webkit-transition: rotate(0deg);
+		-moz-transition:    rotate(0deg);
+		-ms-transition:     rotate(0deg);
+		-o-transition:      rotate(0deg);
+		transition:         rotate(0deg);
+	}
+	.step:not(.active) {
+		opacity: 1;
+	}
+h2 {
+	text-align: center;
+}
+}
+</style>
+</body>
+</html>
